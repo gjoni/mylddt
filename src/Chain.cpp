@@ -268,7 +268,7 @@ vector<tuple<int, int, double> > Chain::GetContacts(double dmax) const {
 			Atom *B = (Atom*) kd_res_item(res, pos);
 			if (B->atomNum > A->atomNum) {
 				double d = Atom::Dist(*A, *B);
-				conts.push_back( { A->atomNum, B->atomNum, d } );
+				conts.push_back(make_tuple(A->atomNum, B->atomNum, d));
 			}
 			kd_res_next(res);
 		}
