@@ -92,16 +92,24 @@ int main(int argc, char *argv[]) {
 			double d = std::get<2>(contacts[i]);
 			fprintf(F, "[%d,%d,%.3lf],", a, b, d);
 		}
-		fprintf(F, "[%d,%d,%.3lf]],\n\"scores\":[", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
+		fprintf(F, "[%d,%d,%.3lf]]", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
 
 		// scores
-		for (unsigned i = 0; i < lddt_ha.ascore.size() - 1; i++) {
-			double ha = lddt_ha.ascore[i];
-			double ts = lddt_ts.ascore[i];
-			fprintf(F, "[%.5lf,%.5lf],", ha, ts);
+		if (Ref != NULL ) {
+			fprintf(F, ",\n\"scores\":[");
+			for (unsigned i = 0; i < lddt_ha.ascore.size(); i++) {
+				double ha = lddt_ha.ascore[i];
+				double ts = lddt_ts.ascore[i];
+				if (i != lddt_ha.ascore.size() - 1) {
+					fprintf(F, "[%.5lf,%.5lf],", ha, ts);
+				} else {
+					fprintf(F, "[%.5lf,%.5lf]],\n", ha, ts);
+				}
+			}
+			fprintf(F, "\"lddt\":[%.5f,%.5f]\n}\n", lddt_ha.score, lddt_ts.score);
+		} else {
+			fprintf(F, "\n}\n");
 		}
-		fprintf(F, "[%.5lf,%.5lf]],\n", lddt_ha.ascore.back(), lddt_ts.ascore.back());
-		fprintf(F, "\"lddt\":[%.5f,%.5f]\n}\n", lddt_ha.score, lddt_ts.score);
 
 		fclose(F);
 	}

@@ -27,6 +27,8 @@ public:
 
 	Residue *residue; /* pointer to a Residue this atom belongs to */
 
+	double lfr[3][3];
+
 	Atom();
 	Atom(const Atom &source);
 	Atom(const AtomRecord::Atom &source);
@@ -37,6 +39,11 @@ public:
 	Atom& operator=(const AtomRecord::Atom &source);
 
 	static double Dist(const Atom &A, const Atom &B);
+
+	// TODO: implement
+	int SetLFR(const Atom *A, const Atom *B, const Atom *C);
+	//int Project(const Atom *A, double out[]);
+	//int PrintLFR();
 
 };
 

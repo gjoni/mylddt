@@ -1,4 +1,5 @@
 #include "Atom.h"
+#include "Math.h"
 
 #include <cstring>
 #include <cstdlib>
@@ -13,6 +14,8 @@ Atom::Atom() :
 	x = y = z = 0.0;
 	element[0] = '\0';
 	charge[0] = '\0';
+	memset(lfr, 0, 9 * sizeof(double));
+	lfr[0][0] = lfr[1][1] = lfr[2][2] = 1.0;
 
 }
 
@@ -24,6 +27,7 @@ Atom::Atom(const Atom &source) :
 	strcpy(name, source.name);
 	strcpy(element, source.element);
 	strcpy(charge, source.charge);
+	memcpy(lfr, source.lfr, 9 * sizeof(double));
 
 }
 
@@ -36,6 +40,8 @@ Atom::Atom(const AtomRecord::Atom &source) :
 	strcpy(element, source.element);
 	strcpy(charge, source.charge);
 	chem_type = GetChemType(name);
+	memset(lfr, 0, 9 * sizeof(double));
+	lfr[0][0] = lfr[1][1] = lfr[2][2] = 1.0;
 
 }
 
@@ -61,6 +67,7 @@ Atom& Atom::operator =(const Atom& source) {
 	strcpy(charge, source.charge);
 	residue = source.residue;
 	chem_type = source.chem_type;
+	memcpy(lfr, source.lfr, 9 * sizeof(double));
 
 	return *this;
 
@@ -80,6 +87,8 @@ Atom& Atom::operator =(const AtomRecord::Atom& source) {
 	strcpy(charge, source.charge);
 	residue = NULL;
 	chem_type = GetChemType(name);
+	memset(lfr, 0, 9 * sizeof(double));
+	lfr[0][0] = lfr[1][1] = lfr[2][2] = 1.0;
 
 	return *this;
 
@@ -110,5 +119,32 @@ double Atom::Dist(const Atom &A, const Atom &B) {
 	double z = A.z - B.z;
 
 	return sqrt(x * x + y * y + z * z);
+
+}
+
+int Atom::SetLFR(const Atom *A, const Atom *B, const Atom *C) {
+
+	if (A == NULL || B == NULL || C == NULL) {
+		return 1;
+	}
+
+	double a[3] = { B->x - A->x, B->y - A->y, B->z - A->z };
+	double b[3] = { C->x - B->x, C->y - B->y, C->z - B->z };
+
+	for (int i = 0; i < 3; i++) {
+		lfr[2][i] = a[i] - b[i];
+	}
+
+	Math::cross(b, a, lfr[0]);
+	Math::cross(lfr[2], lfr[0], lfr[1]);
+
+	for (int i = 0; i < 3; i++) {
+		double norm = sqrt(Math::dot(lfr[i], lfr[i]));
+		for (int j = 0; j < 3; j++) {
+			lfr[i][j] /= norm;
+		}
+	}
+
+	return 0;
 
 }
