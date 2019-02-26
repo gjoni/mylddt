@@ -42,8 +42,8 @@ public:
 
 	// TODO: implement
 	int SetLFR(const Atom *A, const Atom *B, const Atom *C);
-	//int Project(const Atom *A, double out[]);
-	//int PrintLFR();
+	int SetDefaultLFR();
+	int Project(const Atom *A, double out[]) const;
 
 };
 

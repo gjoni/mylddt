@@ -1,10 +1,17 @@
 #include "Atom.h"
 #include "Math.h"
+#include "Topology.h"
+#include "Residue.h"
 
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
 #include <cassert>
+
+#include <map>
+#include <tuple>
+#include <string>
+#include <utility>
 
 Atom::Atom() :
 		atomNum(1), altLoc(' '), x(0.0), y(0.0), z(0.0), occup(0.0), temp(0.0),
@@ -147,4 +154,45 @@ int Atom::SetLFR(const Atom *A, const Atom *B, const Atom *C) {
 
 	return 0;
 
+}
+
+int Atom::SetDefaultLFR() {
+
+	std::map<std::pair<std::string, std::string>, 
+		std::tuple<std::string, std::string, std::string> >::const_iterator it;
+
+	if (residue == NULL) {
+		return 1;
+	}
+
+	it = topology::CANONICAL20_LFR.find({ std::string(residue->name), std::string(name) });
+	if (it == topology::CANONICAL20_LFR.end()) {
+		return 1;
+	}
+
+	Atom *A = residue->atom[std::get<0>(it->second)];
+	Atom *B = residue->atom[std::get<1>(it->second)];
+	Atom *C = residue->atom[std::get<2>(it->second)];
+
+	return SetLFR(A, B, C);
+
+}
+
+int Atom::Project(const Atom *A, double out[]) const {
+
+	if (A == NULL) {
+		return 1;
+	}
+
+	double xyz[3] = { x - A->x, y - A->y, z - A->z };
+
+	memset(out, 0, 3 * sizeof(double));
+
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			out[i] += lfr[i][j] * xyz[j];
+		}
+	}
+
+	return 0;
 }

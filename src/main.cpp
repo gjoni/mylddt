@@ -24,11 +24,35 @@ int main(int argc, char *argv[]) {
 		*Ref = Chain(opts.ref);
 	}
 
+	Model.SetAtomsLFR();
+
 	// make atom numbering in the Model sequential
 	// and starting from zero
 	// !!! very important !!!
 	for (unsigned i = 0; i < Model.nAtoms; i++) {
-		Model.atoms[i]->atomNum = i;
+		Atom *A = Model.atoms[i];
+		A->atomNum = i;
+		//A->SetDefaultLFR();
+		/*
+		// X
+		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+			A->atomNum*2, "C", ' ', "XXX", 'A', A->residue->seqNum, ' ', A->x, A->y, A->z, 1.0, A->temp, "", "");
+		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+			A->atomNum*2+1, "C", ' ', "XXX", 'A', A->residue->seqNum, ' ', A->x + A->lfr[0][0], A->y + A->lfr[0][1], A->z + A->lfr[0][2], 1.0, A->temp, "", "");
+		printf("TER\nEND\n");
+		// Y
+		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+			A->atomNum*2, "C", ' ', "YYY", 'A', A->residue->seqNum, ' ', A->x, A->y, A->z, 1.0, A->temp, "", "");
+		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+			A->atomNum*2+1, "C", ' ', "YYY", 'A', A->residue->seqNum, ' ', A->x + A->lfr[1][0], A->y + A->lfr[1][1], A->z + A->lfr[1][2], 1.0, A->temp, "", "");
+		printf("TER\nEND\n");
+		// Z
+		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+			A->atomNum*2, "C", ' ', "ZZZ", 'A', A->residue->seqNum, ' ', A->x, A->y, A->z, 1.0, A->temp, "", "");
+		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+			A->atomNum*2+1, "C", ' ', "ZZZ", 'A', A->residue->seqNum, ' ', A->x + A->lfr[2][0], A->y + A->lfr[2][1], A->z + A->lfr[2][2], 1.0, A->temp, "", "");
+		printf("TER\nEND\n");
+		*/
 	}
 
 	// additional data on the Model
@@ -90,7 +114,11 @@ int main(int argc, char *argv[]) {
 			int a = std::get<0>(contacts[i]);
 			int b = std::get<1>(contacts[i]);
 			double d = std::get<2>(contacts[i]);
-			fprintf(F, "[%d,%d,%.3lf],", a, b, d);
+			double xyz_ab[3], xyz_ba[3];
+			Model.atoms[a]->Project(Model.atoms[b], xyz_ab);
+			Model.atoms[b]->Project(Model.atoms[a], xyz_ba);
+			fprintf(F, "[%d,%d,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf],",
+				a, b, d, xyz_ab[0], xyz_ab[1], xyz_ab[2], xyz_ba[0], xyz_ba[1], xyz_ba[2]);
 		}
 		fprintf(F, "[%d,%d,%.3lf]]", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
 

@@ -304,3 +304,31 @@ int Chain::MaxBonds() const {
 
 }
 
+int Chain::SetAtomsLFR() {
+
+	// set default local frames first
+	for (auto A : atoms) {
+		A->SetDefaultLFR();
+	}
+
+	// fix backbone N,C
+	for (unsigned i = 0; i < residues.size(); i++) {
+		Residue &R = residues[i];
+		Atom *N = R.atom["N"];
+		Atom *CA = R.atom["CA"];
+		Atom *C = R.atom["C"];
+		Atom *O = R.atom["O"];
+		if (i > 0) {
+			Atom *Cprev = residues[i-1].atom["C"];
+			N->SetLFR(Cprev, N, CA);
+		}
+		if (i < residues.size() - 1) {
+			Atom *Nnext = residues[i+1].atom["N"];
+			C->SetLFR(CA, C, Nnext);
+			O->SetLFR(CA, O, Nnext);
+		}
+	}
+
+	return 0;
+
+}

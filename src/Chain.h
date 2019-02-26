@@ -56,6 +56,9 @@ public:
 
 	string GetSequence() const;
 
+	// TODO: implement
+	int SetAtomsLFR();
+
 };
 
 #endif /* CHAIN_H_ */
