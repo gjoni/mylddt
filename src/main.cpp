@@ -101,9 +101,23 @@ int main(int argc, char *argv[]) {
 				fprintf(F, "\"%s\",", buf);
 			}
 		}
-		fprintf(F, "\"%s\"],\n\"bonds\":[", buf);
+		fprintf(F, "\"%s\"],\n", buf);
+
+		// residue indices
+		fprintf(F, "\"res_idx\":[");
+		for (unsigned i = 0; i < Model.residues.size(); i++) {
+			Residue &R = Model.residues[i];
+			for (unsigned j = 0; j < R.atoms.size(); j++) {
+				if (i == Model.residues.size() - 1 && j == R.atoms.size() - 1) {
+					fprintf(F, "%d],\n", i);
+				} else {
+					fprintf(F, "%d,", i);
+				}
+			}
+		}
 
 		// bonds
+		fprintf(F, "\"bonds\":[");
 		for (unsigned i = 0; i < bonds.size() - 1; i++) {
 			fprintf(F, "[%d,%d],", bonds[i].first, bonds[i].second);
 		}
