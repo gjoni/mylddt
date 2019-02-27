@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 		Atom *A = Model.atoms[i];
 		A->atomNum = i;
 		//A->SetDefaultLFR();
+		/*
 		// X
 		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
 			A->atomNum*2, "C", ' ', "XXX", 'A', A->residue->seqNum, ' ', A->x, A->y, A->z, 1.0, A->temp, "", "");
@@ -51,6 +52,7 @@ int main(int argc, char *argv[]) {
 		printf("ATOM  %5d %-4s%c%3s %c%4d%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
 			A->atomNum*2+1, "C", ' ', "ZZZ", 'A', A->residue->seqNum, ' ', A->x + A->lfr[2][0], A->y + A->lfr[2][1], A->z + A->lfr[2][2], 1.0, A->temp, "", "");
 		printf("TER\nEND\n");
+		*/
 	}
 
 	// additional data on the Model
