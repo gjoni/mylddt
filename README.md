@@ -8,6 +8,13 @@ make
 ```
 
 ### Usage
+
+#### Extract contacts from model using 8A distance cutoff
+```
+./get_features -i example/tag0001.al.pdb -j example/tag0001.al.json -d 8.0
+```
+
+#### Extract features and compare to native
 ```
 ./get_features -i example/tag0001.al.pdb -r example/native.pdb -j example/tag0001.al.json
 ```
