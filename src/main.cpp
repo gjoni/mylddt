@@ -124,17 +124,22 @@ int main(int argc, char *argv[]) {
 		fprintf(F,"[%d,%d]],\n\"contacts\":[",bonds.back().first, bonds.back().second);
 
 		// contacts
-		for (unsigned i = 0; i < contacts.size() - 1; i++) {
+		for (unsigned i = 0; i < contacts.size(); i++) {
 			int a = std::get<0>(contacts[i]);
 			int b = std::get<1>(contacts[i]);
 			double d = std::get<2>(contacts[i]);
 			double xyz_ab[3], xyz_ba[3];
 			Model.atoms[a]->Project(Model.atoms[b], xyz_ab);
 			Model.atoms[b]->Project(Model.atoms[a], xyz_ba);
-			fprintf(F, "[%d,%d,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf],",
-				a, b, d, xyz_ab[0], xyz_ab[1], xyz_ab[2], xyz_ba[0], xyz_ba[1], xyz_ba[2]);
+			if (i < contacts.size() - 1) {
+				fprintf(F, "[%d,%d,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf],",
+					a, b, d, xyz_ab[0], xyz_ab[1], xyz_ab[2], xyz_ba[0], xyz_ba[1], xyz_ba[2]);
+			} else {
+				fprintf(F, "[%d,%d,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf,%.4lf]]",
+					a, b, d, xyz_ab[0], xyz_ab[1], xyz_ab[2], xyz_ba[0], xyz_ba[1], xyz_ba[2]);
+			}
 		}
-		fprintf(F, "[%d,%d,%.3lf]]", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
+		//fprintf(F, "[%d,%d,%.3lf]]", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
 
 		// scores
 		if (Ref != NULL ) {
