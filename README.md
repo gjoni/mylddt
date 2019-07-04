@@ -32,7 +32,7 @@ Unpack example PDBs
 tar xf init.tar.gz
 ```
 
-#### Do feature extraction
+Do feature extraction
 ```
 ./preprocessor.sh ./init ./json
 ```
