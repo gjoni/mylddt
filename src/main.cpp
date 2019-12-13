@@ -139,7 +139,6 @@ int main(int argc, char *argv[]) {
 					a, b, d, xyz_ab[0], xyz_ab[1], xyz_ab[2], xyz_ba[0], xyz_ba[1], xyz_ba[2]);
 			}
 		}
-		//fprintf(F, "[%d,%d,%.3lf]]", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
 
 		// contacts in the reference
 		if (Ref != NULL) {
