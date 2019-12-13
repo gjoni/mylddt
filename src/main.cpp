@@ -57,8 +57,8 @@ int main(int argc, char *argv[]) {
 
 	// additional data on the Model
 	std::vector<std::pair<int, int> > bonds = Model.GetBonds();
-
 	std::vector<std::tuple<int, int, double> > contacts = Model.GetContacts(opts.dmax);
+
 /*
 	if (opts.verb > 0) {
 		printf("# %s\n", std::string(78, '-').c_str());
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
 		}
 		fprintf(F,"[%d,%d]],\n\"contacts\":[",bonds.back().first, bonds.back().second);
 
-		// contacts
+		// contacts in the model
 		for (unsigned i = 0; i < contacts.size(); i++) {
 			int a = std::get<0>(contacts[i]);
 			int b = std::get<1>(contacts[i]);
@@ -140,6 +140,30 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		//fprintf(F, "[%d,%d,%.3lf]]", std::get<0>(contacts.back()), std::get<1>(contacts.back()), std::get<2>(contacts.back()));
+
+		// contacts in the reference
+		if (Ref != NULL) {
+			fprintf(F,",\n\"ref_dist\":[");
+			for (unsigned i = 0; i < contacts.size(); i++) {
+				int a = std::get<0>(contacts[i]);
+				int b = std::get<1>(contacts[i]);
+				Atom *A = Ref->GetAtom(*(Model.atoms[a]));
+				Atom *B = Ref->GetAtom(*(Model.atoms[b]));
+				if (A != NULL || B != NULL) {
+					if (i < contacts.size() - 1) {
+						fprintf(F,"%.4lf,", Atom::Dist(*A, *B));
+					} else {
+						fprintf(F,"%.4lf]", Atom::Dist(*A, *B));
+					}
+				} else {
+					if (i < contacts.size() - 1) {
+						fprintf(F,"nan,");
+					} else {
+						fprintf(F,"nan]");
+					}
+				}
+			}
+		}
 
 		// scores
 		if (Ref != NULL ) {
