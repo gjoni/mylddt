@@ -10,6 +10,7 @@ struct OPTS {
 	std::string json;
 	std::string pdb;
 	double dmax;
+	int topn;
 	int verb;
 };
 

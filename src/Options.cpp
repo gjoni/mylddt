@@ -10,6 +10,7 @@ void PrintOpts(const OPTS &opts) {
 	printf("          -j output.json \\      # (optional) atomic features\n");
 	printf("          -p output.pdb \\       # (optional) cleaned model\n");
 	printf("          -d DMAX \\             # (%.2lf) contact distance\n", opts.dmax);
+	printf("          -t TOPN \\             # (%d) top contacts to save\n", opts.topn);
 	printf("          -v VERBOSITY \\        # (%d) verbosity level\n", opts.verb);
 	printf("\n");
 
@@ -18,7 +19,7 @@ void PrintOpts(const OPTS &opts) {
 bool GetOpts(int argc, char *argv[], OPTS &opts) {
 
 	char tmp;
-	while ((tmp = getopt(argc, argv, "hi:r:j:d:p:v:")) != -1) {
+	while ((tmp = getopt(argc, argv, "hi:r:j:d:p:v:t:")) != -1) {
 		switch (tmp) {
 		case 'h': /* help */
 			printf("!!! HELP !!!\n");
@@ -35,6 +36,9 @@ bool GetOpts(int argc, char *argv[], OPTS &opts) {
 			break;
 		case 'd': /* chain ID */
 			opts.dmax = atof(optarg);
+			break;
+		case 't':
+			opts.topn = atoi(optarg);
 			break;
 		case 'p':
 			opts.pdb = std::string(optarg);

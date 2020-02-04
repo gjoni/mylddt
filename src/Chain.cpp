@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -278,6 +279,63 @@ vector<tuple<int, int, double> > Chain::GetContacts(double dmax) const {
 	return conts;
 
 }
+
+
+vector<tuple<int, int, double> > Chain::GetContacts(double dmax, unsigned top) const {
+
+	vector<tuple<int, int, double> > conts;
+
+	for (auto &A : atoms) {
+
+		vector<tuple<int, int, double> > contsa;
+
+		kdres *res = kd_nearest_range3(kd, A->x, A->y, A->z, dmax);
+		double pos[3];
+		while (!kd_res_end(res)) {
+			Atom *B = (Atom*) kd_res_item(res, pos);
+			if (B->atomNum > A->atomNum) {
+				double d = Atom::Dist(*A, *B);
+				contsa.push_back(make_tuple(A->atomNum, B->atomNum, d));
+			}
+			kd_res_next(res);
+		}
+		kd_res_free(res);
+
+		std::sort(std::begin(contsa), std::end(contsa),
+			[](tuple<int, int, double> a, tuple<int, int, double> b)
+			{return get<2>(a) < get<2>(b);});
+
+		if (contsa.size() > top) {
+			contsa = vector<tuple<int, int, double> >(contsa.begin(), contsa.begin() + top);
+		}
+
+		if (contsa.size() > 0) {
+			conts.insert(end(conts), begin(contsa), end(contsa));
+		}
+
+	}
+
+	return conts;
+
+}
+
+/*
+vector<tuple<int, int, double> > Chain::GetContacts(double dmax, unsigned top) const {
+
+	vector<tuple<int, int, double> > conts = GetContacts(dmax);
+
+	std::sort(std::begin(conts), std::end(conts),
+		[](tuple<int, int, double> a, tuple<int, int, double> b)
+		{return get<2>(a) < get<2>(b);});
+
+	if (conts.size() > top) {
+		conts = vector<tuple<int, int, double> >(conts.begin(), conts.begin() + top);
+	}
+
+	return conts;
+
+}
+*/
 
 int Chain::MaxAtoms() const {
 

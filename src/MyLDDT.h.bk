@@ -32,7 +32,7 @@ private:
 	MyLDDT();
 	MyLDDT(const MyLDDT&);
 
-	std::tuple<double,int,int> lddt(const Atom &Amod, const Chain &Mod_, const Atom &Aref, const Chain &Ref_);
+	double lddt(const Atom &Amod, const Chain &Mod_, const Atom &Aref, const Chain &Ref_);
 
 public:
 

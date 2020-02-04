@@ -114,12 +114,12 @@ MyLDDT::Result MyLDDT::GetScore(MODE mode) {
 			}
 
 			// score original placement
-			lddt_orig += std::get<0>(lddt(A1, Mod_sub_fixed, *A1ref, Ref_sub_fixed));
-			lddt_orig += std::get<0>(lddt(A2, Mod_sub_fixed, *A2ref, Ref_sub_fixed));
+			lddt_orig += lddt(A1, Mod_sub_fixed, *A1ref, Ref_sub_fixed);
+			lddt_orig += lddt(A2, Mod_sub_fixed, *A2ref, Ref_sub_fixed);
 
 			// score flipped atoms
-			lddt_flip += std::get<0>(lddt(A1, Mod_sub_fixed, *A2ref, Ref_sub_fixed));
-			lddt_flip += std::get<0>(lddt(A2, Mod_sub_fixed, *A1ref, Ref_sub_fixed));
+			lddt_flip += lddt(A1, Mod_sub_fixed, *A2ref, Ref_sub_fixed);
+			lddt_flip += lddt(A2, Mod_sub_fixed, *A1ref, Ref_sub_fixed);
 		}
 
 		// flip if score improves
@@ -154,28 +154,35 @@ MyLDDT::Result MyLDDT::GetScore(MODE mode) {
 		vector<int>(Mod.nAtoms, 0)
 	};
 
-	// aggregate atomic scores into residue and total scores
-	double stotal = 0.0;
-	for (unsigned i = 0; i < Mod.nRes; i++) {
-		const Residue &R = Mod.residues[i];
-		double rtotal = 0.0;
-		for (auto &A : R.atoms) {
-			Atom *Aref = Ref_sub.GetAtom(A);
-			std::tuple<double,int,int> s;
-			if (Aref != NULL) {
-				s = lddt(A, Mod_sub_flip, *Aref, Ref);
-				result.amask[A.atomNum] = 1;
-			}
-			result.ascore[A.atomNum] = std::get<0>(s);
-			result.rscore[i] += std::get<1>(s);
-			rtotal += std::get<2>(s);
+	for (auto Amod : Mod_sub_flip.atoms) {
+		Atom *Aref = Ref_sub.GetAtom(*Amod);
+		double s = 0.0;
+		if (Aref != NULL) {
+			s = lddt(*Amod, Mod_sub_flip, *Aref, Ref);
+			result.amask[Amod->atomNum] = 1;
 		}
-		result.score += result.rscore[i];
-		stotal += rtotal;
-		result.rscore[i] = rtotal > 0.0 ? result.rscore[i] / rtotal : 0.0;
+		result.ascore[Amod->atomNum] = s;
+		result.score += s;
 	}
 
-	result.score = stotal > 0.0 ? result.score / stotal : 0.0;
+	// normalize by atoms in Reference:
+	// atoms missing in Model contribute zero
+	// to the total score
+	result.score /= Ref.nAtoms;
+
+	// aggregate atomic scores into residue scores
+	for (unsigned i = 0; i < Mod.nRes; i++) {
+		const Residue &R = Mod.residues[i];
+		double &s = result.rscore[i];
+		double n = 0;
+		for (auto &A : R.atoms) {
+			s += result.ascore[A.atomNum];
+			n += result.amask[A.atomNum];
+		}
+		if (n > 0) {
+			s /= n;
+		}
+	}
 
 	if (verbosity > 2) {
 		printf("# %s\n", string(78, '-').c_str());
@@ -203,7 +210,7 @@ MyLDDT::Result MyLDDT::GetScore(MODE mode) {
 
 }
 
-std::tuple<double,int,int> MyLDDT::lddt(const Atom &Amod, const Chain &Mod_, const Atom &Aref, const Chain &Ref_) {
+double MyLDDT::lddt(const Atom &Amod, const Chain &Mod_, const Atom &Aref, const Chain &Ref_) {
 
 	// save neighbors and corresponding Mod/Ref distances
 	// in this vector
@@ -261,29 +268,28 @@ std::tuple<double,int,int> MyLDDT::lddt(const Atom &Amod, const Chain &Mod_, con
 	}
 
 	// calculate final score
-	//double score = 0.0, smax = 0.0;
-	int ngood = 0, nmax = 0;
+	double score = 0.0, smax = 0.0;
 	for (auto &n : neighbors) {
 		double dmin = n.second.first < n.second.second ? n.second.first : n.second.second;
 		if (dmin >= dmax) {
 			continue;
 		}
 		double delta = fabs(n.second.first - n.second.second);
-		nmax += 1;
+		smax += 1.0;
 
 		for (unsigned i = 0; i < dbins.size(); i++) {
 			if (delta < dbins[i]) {
-				ngood += 1;
+				score += 1.0;
 			}
 		}
+
+	}
+	if (smax > 1e-5) {
+		score /= smax * dbins.size();
+	} else {
+		score = 0.0;
 	}
 
-	double score = 0.0;
-	nmax *= dbins.size();
-	if (nmax > 0) {
-		score = 1.0 * ngood / nmax;
-	}
-
-	return {score, ngood, nmax};
+	return score;
 
 }

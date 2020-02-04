@@ -50,6 +50,7 @@ public:
 
 	vector<pair<int, int> > GetBonds() const;
 	vector<tuple<int, int, double> > GetContacts(double dmax) const;
+	vector<tuple<int, int, double> > GetContacts(double dmax, unsigned top) const;
 
 	int MaxBonds() const;
 	int MaxAtoms() const;

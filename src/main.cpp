@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 	//
 	// (1) Initializations
 	//
-	OPTS opts = { "", "", "", "", 10.0, 1 };
+	OPTS opts = { "", "", "", "", 999.99, 100, 1 };
 	if (!GetOpts(argc, argv, opts)) {
 		PrintOpts(opts);
 		return 1;
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
 	// additional data on the Model
 	std::vector<std::pair<int, int> > bonds = Model.GetBonds();
-	std::vector<std::tuple<int, int, double> > contacts = Model.GetContacts(opts.dmax);
+	std::vector<std::tuple<int, int, double> > contacts = Model.GetContacts(opts.dmax, opts.topn);
 
 /*
 	if (opts.verb > 0) {
