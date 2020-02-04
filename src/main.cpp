@@ -166,7 +166,21 @@ int main(int argc, char *argv[]) {
 
 		// scores
 		if (Ref != NULL ) {
-			fprintf(F, ",\n\"scores\":[");
+
+			// residue-level
+			fprintf(F, ",\n\"rscores\":[");
+			for (unsigned i = 0; i < lddt_ha.rscore.size(); i++) {
+				double ha = lddt_ha.rscore[i];
+				double ts = lddt_ts.rscore[i];
+				if (i != lddt_ha.rscore.size() - 1) {
+					fprintf(F, "[%.5lf,%.5lf],", ha, ts);
+				} else {
+					fprintf(F, "[%.5lf,%.5lf]]", ha, ts);
+				}
+			}
+
+			// atom-level
+			fprintf(F, ",\n\"ascores\":[");
 			for (unsigned i = 0; i < lddt_ha.ascore.size(); i++) {
 				double ha = lddt_ha.ascore[i];
 				double ts = lddt_ts.ascore[i];
@@ -176,6 +190,8 @@ int main(int argc, char *argv[]) {
 					fprintf(F, "[%.5lf,%.5lf]],\n", ha, ts);
 				}
 			}
+
+			// full structure
 			fprintf(F, "\"lddt\":[%.5f,%.5f]\n}\n", lddt_ha.score, lddt_ts.score);
 		} else {
 			fprintf(F, "\n}\n");

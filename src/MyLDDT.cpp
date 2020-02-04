@@ -210,6 +210,7 @@ std::tuple<double,int,int> MyLDDT::lddt(const Atom &Amod, const Chain &Mod_, con
 	map<pair<int, string>, pair<double, double> > neighbors;
 
 	// loop over contacts in the Model
+	/*
 	{
 		kdres *res = kd_nearest_range3(Mod_.kd, Amod.x, Amod.y, Amod.z, dmax);
 		double pos[3];
@@ -231,6 +232,7 @@ std::tuple<double,int,int> MyLDDT::lddt(const Atom &Amod, const Chain &Mod_, con
 		}
 		kd_res_free(res);
 	}
+	*/
 
 	// loop over contacts in the Reference
 	{
@@ -244,9 +246,10 @@ std::tuple<double,int,int> MyLDDT::lddt(const Atom &Amod, const Chain &Mod_, con
 
 			// skip contact if:
 			// 1) it is already among neighbors
-			// 2) atoms are from same residue
-			if (Aref.residue->seqNum != Bref->residue->seqNum && 
-				neighbors.find(key) == neighbors.end() ) {
+			// 2) atoms are from same residue (!!!changed!!!)
+			//if (Aref.residue->seqNum != Bref->residue->seqNum && 
+			//	neighbors.find(key) == neighbors.end() ) {
+			if (&Aref != Bref && neighbors.find(key) == neighbors.end() ) {
 
 				Atom *Bmod = Mod_.GetAtom(*Bref);
 
