@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
 				int b = std::get<1>(contacts[i]);
 				Atom *A = Ref->GetAtom(*(Model.atoms[a]));
 				Atom *B = Ref->GetAtom(*(Model.atoms[b]));
-				if (A != NULL || B != NULL) {
+				if (A != NULL && B != NULL) {
 					if (i < contacts.size() - 1) {
 						fprintf(F,"%.4lf,", Atom::Dist(*A, *B));
 					} else {
