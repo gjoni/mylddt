@@ -26,12 +26,12 @@ Options:  -i input.pdb  \       # (required) input PDB file
 
 ```
 
-#### Extract contacts from model using 8A distance cutoff
+#### Extract features from a PDB structure using 8A distance cutoff
 ```
 ./get_features -i example/tag0001.al.pdb -j example/tag0001.al.json -d 8.0
 ```
 
-#### Extract features and compare to native
+#### Extract features and compare to the native structure
 ```
 ./get_features -i example/tag0001.al.pdb -r example/native.pdb -j example/tag0001.al.json
 ```
