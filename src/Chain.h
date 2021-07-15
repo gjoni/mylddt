@@ -31,6 +31,7 @@ public:
 	vector<Atom*> atoms;
 
 	Chain();
+	int ContainsResidue(vector<vector<AtomRecord::Atom>>, const AtomRecord::Atom &);
 	Chain(const string &name);
 	Chain(const Chain &source);
 	Chain(const vector<Residue> &rvec);

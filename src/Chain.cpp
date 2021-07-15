@@ -17,6 +17,18 @@ Chain::Chain() :
 
 }
 
+int Chain::ContainsResidue(vector<vector<AtomRecord::Atom>> resVec, const AtomRecord::Atom & elem)
+{
+    int result = -1;
+    for(int i = 0; i < resVec.size(); i++) {
+        if (resVec[i].back().resNum == elem.resNum && resVec[i].back().insCode == elem.insCode) {
+            result = i;
+            break;
+        }
+    }
+    return result;
+}
+
 Chain::Chain(const string &name) :
 		kd(NULL), nRes(0), nAtoms(0), residues(0), atoms(0) {
 
@@ -46,10 +58,10 @@ Chain::Chain(const string &name) :
 			// the first atom
 			aRecVec.push_back(vector<AtomRecord::Atom>(1, A));
 		} else {
-			AtomRecord::Atom &B = aRecVec.back().back();
-			if (B.resNum == A.resNum && B.insCode == A.insCode) {
-				// same residue
-				aRecVec.back().push_back(A);
+			int resIdx = ContainsResidue(aRecVec, A);
+			if (resIdx != -1) {
+				// residue already exists
+				aRecVec.at(resIdx).push_back(A);
 			} else {
 				// new residue
 				aRecVec.push_back(vector<AtomRecord::Atom>(1, A));
